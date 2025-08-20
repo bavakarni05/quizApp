@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Home from './pages/Home';
-import CreateRoom from './pages/CreateRoom';
+import CreateRoom from './pages/CreateRoom;
 import JoinRoom from './pages/JoinRoom';
 import WaitingRoom from './pages/WaitingRoom';
 import QuizRoom from './pages/QuizRoom';
