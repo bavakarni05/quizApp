@@ -340,30 +340,6 @@ const CreateRoom = () => {
                         ))}
                       </TextField>
                     </Grid>
-                    <Grid item xs={12}>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageChange(e.target.files[0])}
-                        style={{ display: 'none' }}
-                        id={`image-upload-${selectedQuestion}`}
-                      />
-                      <label htmlFor={`image-upload-${selectedQuestion}`}>
-                        <Button
-                          variant="outlined"
-                          component="span"
-                          startIcon={<AddIcon />}
-                          sx={{ color: '#00ff00', borderColor: '#00ff00' }}
-                        >
-                          Add Image
-                        </Button>
-                        {q.image && (
-                          <Typography variant="caption" sx={{ color: '#00ff00', ml: 2 }}>
-                            {q.image.name}
-                          </Typography>
-                        )}
-                      </label>
-                    </Grid>
                     {questions.length > 1 && (
                       <Grid item xs={12}>
                         <IconButton color="error" onClick={() => removeQuestion(selectedQuestion)}>
@@ -391,8 +367,13 @@ const CreateRoom = () => {
             <Typography sx={{ mt: 2, color: '#00ff00' }}>Share these with your players!</Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleDialogClose} variant="contained" color="success">
-              Go to Waiting Room
+            <Button 
+              onClick={() => navigate('/')} 
+              variant="contained" 
+              color="success"
+              fullWidth
+            >
+              Go to Home
             </Button>
           </DialogActions>
         </Dialog>
