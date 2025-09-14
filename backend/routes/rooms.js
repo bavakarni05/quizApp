@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Room = require('../models/Room');
 const User = require('../models/User');
+const AuthUser = require('../models/AuthUser'); // Assuming AuthUser model is defined in a separate file
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
@@ -14,29 +15,47 @@ router.post('/create', async (req, res) => {
     const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
     const hostPin = Math.random().toString(36).substring(2, 6).toUpperCase();
 
-    // Find the host user by username
-    const hostUser = await User.findOne({ username: hostUsername });
-    if (!hostUser) {
-      return res.status(404).json({ message: 'Host user not found' });
+    // Find the host user by username in AuthUser collection
+    const authUser = await AuthUser.findOne({ username: hostUsername });
+    if (!authUser) {
+      return res.status(404).json({ message: 'Host user not found. Please log in again.' });
+    }
+
+    // Find or create the corresponding User document
+    let user = await User.findOne({ username: hostUsername });
+    if (!user) {
+      user = new User({ username: hostUsername });
+      await user.save();
     }
 
     const room = new Room({
       quizName,
       roomCode,
       hostPin,
-      host: hostUser._id,
+      host: user._id,
+      hostUsername: hostUsername, // Store username for easier access
       status: 'waiting',
-      players: [hostUser._id]
+      players: [user._id]
     });
 
     await room.save();
 
-    // Update host's current room
-    await User.findByIdAndUpdate(hostUser._id, { currentRoom: room._id });
+    // Update user's current room
+    user.currentRoom = room._id;
+    await user.save();
 
-    res.json({ room, hostPin });
+    // Return room info with hostPin
+    res.json({ 
+      room: {
+        ...room.toObject(),
+        _id: room._id,
+        roomCode: room.roomCode
+      }, 
+      hostPin 
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error creating room:', error);
+    res.status(500).json({ message: error.message || 'Failed to create room' });
   }
 });
 

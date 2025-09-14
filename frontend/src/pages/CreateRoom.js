@@ -133,49 +133,100 @@ const CreateRoom = () => {
     setSelectedQuestion(Math.max(0, index - 1));
   };
 
-  const handleSubmit = async () => {
+  const validateForm = () => {
+    // Check if quiz name is provided
+    if (!quizName.trim()) {
+      alert('Please enter a quiz name');
+      return false;
+    }
+
+    // Check if all questions are valid
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!q.question.trim()) {
+        alert(`Question ${i + 1} is missing text`);
+        setSelectedQuestion(i);
+        return false;
+      }
+
+      // Check all options are filled
+      for (let j = 0; j < q.options.length; j++) {
+        if (!q.options[j].trim()) {
+          alert(`Question ${i + 1}, Option ${j + 1} is empty`);
+          setSelectedQuestion(i);
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e?.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
+
     try {
       // Get host username from JWT token
       const token = localStorage.getItem('token');
-      let hostUsername = '';
-      if (token) {
-        const decoded = jwtDecode(token);
-        hostUsername = decoded.username;
+      if (!token) {
+        throw new Error('No authentication token found. Please log in again.');
       }
-      // Create room
+
+      const decoded = jwtDecode(token);
+      const hostUsername = decoded.username;
+
+      if (!hostUsername) {
+        throw new Error('Could not determine host username');
+      }
+
+      // Step 1: Create the room
       const roomResponse = await axios.post('http://localhost:5000/api/rooms/create', {
         hostUsername,
-        quizName,
+        quizName: quizName.trim(),
       });
+
       const { room, hostPin } = roomResponse.data;
-      setRoomInfo({ roomCode: room.roomCode, hostPin });
+
+      if (!room || !hostPin) {
+        throw new Error('Failed to create room: Invalid response from server');
+      }
+
+      // Step 2: Upload questions one by one to ensure order
+      for (const question of questions) {
+        const formData = new FormData();
+        formData.append('question', question.question.trim());
+        formData.append('options', JSON.stringify(question.options.map(opt => opt.trim())));
+        formData.append('correctAnswer', question.correctAnswer);
+        formData.append('timeLimit', question.timeLimit);
+
+        if (question.image) {
+          formData.append('image', question.image);
+        }
+
+        await axios.post(`http://localhost:5000/api/questions/${room._id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+
+      // Step 3: Show success dialog
+      setRoomInfo({
+        roomCode: room.roomCode,
+        hostPin: hostPin
+      });
       setDialogOpen(true);
-      // Upload all questions
-      await Promise.all(
-        questions.map(async (question) => {
-          const formData = new FormData();
-          formData.append('question', question.question);
-          formData.append('options', JSON.stringify(question.options));
-          formData.append('correctAnswer', question.correctAnswer);
-          formData.append('timeLimit', question.timeLimit);
-          if (question.image) {
-            formData.append('image', question.image);
-          }
-          await axios.post(`http://localhost:5000/api/questions/${room._id}`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-        })
-      );
-      // After dialog closes, navigate to waiting room
-      setLoading(false);
-      // Navigation will be handled after dialog closes
-      // navigate(`/waiting-room/${room._id}`, { state: { roomCode: room.roomCode, hostPin } });
+
     } catch (error) {
+      console.error('Error creating quiz:', error);
+      alert(`Failed to create quiz: ${error.response?.data?.message || error.message}`);
+    } finally {
       setLoading(false);
-      console.error('Error creating room:', error);
     }
   };
 
