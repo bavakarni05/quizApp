@@ -24,9 +24,9 @@ const UserRooms = () => {
           try {
             let url = '';
             if (decoded.role === 'host') {
-              url = `http://localhost:5000/api/rooms/host/${decoded.username}`;
+              url = `https://quizzverse-cv88.onrender.com/api/rooms/host/${decoded.username}`;
             } else if (decoded.role === 'player') {
-              url = `http://localhost:5000/api/rooms/player/${decoded.username}`;
+              url = `https://quizzverse-cv88.onrender.com/api/rooms/player/${decoded.username}`;
             }
             if (url) {
               const res = await axios.get(url);

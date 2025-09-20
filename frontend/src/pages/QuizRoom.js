@@ -60,7 +60,7 @@ const Timer = styled(Box)`
   color: #00ff00;
 `;
 
-const SOCKET_URL = 'http://localhost:5000';
+const SOCKET_URL = 'https://quizzverse-cv88.onrender.com';
 
 const QuizRoom = () => {
   const { roomId } = useParams();

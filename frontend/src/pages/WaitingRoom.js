@@ -52,7 +52,7 @@ const WaitingRoom = () => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:5000');
+    const newSocket = io('https://quizzverse-cv88.onrender.com');
     setSocket(newSocket);
 
     newSocket.emit('joinRoom', { roomId });
@@ -75,7 +75,7 @@ const WaitingRoom = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/rooms/${roomId}`);
+        const response = await axios.get(`https://quizzverse-cv88.onrender.com/api/rooms/${roomId}`);
         setRoom(response.data);
       } catch (error) {
         console.error('Error fetching room:', error);
@@ -87,7 +87,7 @@ const WaitingRoom = () => {
 
   const handleStartQuiz = async () => {
     try {
-      await axios.post(`http://localhost:5000/api/rooms/${roomId}/start`);
+      await axios.post(`https://quizzverse-cv88.onrender.com/api/rooms/${roomId}/start`);
       socket.emit('startGame', { roomId });
     } catch (error) {
       console.error('Error starting quiz:', error);

@@ -185,7 +185,7 @@ const CreateRoom = () => {
       }
 
       // Step 1: Create the room
-      const roomResponse = await axios.post('http://localhost:5000/api/rooms/create', {
+      const roomResponse = await axios.post('https://quizzverse-cv88.onrender.com/api/rooms/create', {
         hostUsername,
         quizName: quizName.trim(),
       });
@@ -208,7 +208,7 @@ const CreateRoom = () => {
           formData.append('image', question.image);
         }
 
-        await axios.post(`http://localhost:5000/api/questions/${room._id}`, formData, {
+        await axios.post(`https://quizzverse-cv88.onrender.com/api/questions/${room._id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

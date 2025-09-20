@@ -56,7 +56,7 @@ const JoinRoom = () => {
     setLoading(true);
     try {
       if (role === 'host') {
-        const response = await axios.post('http://localhost:5000/api/rooms/join/host', {
+        const response = await axios.post('https://quizzverse-cv88.onrender.com/api/rooms/join/host', {
           roomCode: formData.roomCode.trim(),
           hostPin: formData.hostPin,
         });
@@ -64,7 +64,7 @@ const JoinRoom = () => {
           state: { isHost: true },
         });
       } else {
-        const response = await axios.post('http://localhost:5000/api/rooms/join/player', {
+        const response = await axios.post('https://quizzverse-cv88.onrender.com/api/rooms/join/player', {
           roomCode: formData.roomCode.trim(),
           username: formData.username,
         });

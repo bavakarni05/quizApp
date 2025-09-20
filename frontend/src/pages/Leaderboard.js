@@ -54,7 +54,7 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/rooms/${roomId}`);
+        const response = await axios.get(`https://quizzverse-cv88.onrender.com/api/rooms/${roomId}`);
         setRoom(response.data);
         setLoading(false);
       } catch (error) {

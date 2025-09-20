@@ -40,7 +40,7 @@ const Auth = () => {
     setLoading(true);
     try {
       const endpoint = mode === 'login' ? '/api/users/login' : '/api/users/signup';
-      const res = await axios.post(`http://localhost:5000${endpoint}`, {
+      const res = await axios.post(`https://quizzverse-cv88.onrender.com${endpoint}`, {
         username,
         password,
         role,

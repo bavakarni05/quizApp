@@ -12,7 +12,7 @@ const RoomDetails = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/rooms/${roomId}`);
+        const res = await axios.get(`https://quizzverse-cv88.onrender.com/api/rooms/${roomId}`);
         setRoom(res.data);
       } catch (err) {
         setError('Room not found');
